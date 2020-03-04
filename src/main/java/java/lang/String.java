@@ -107,10 +107,12 @@ import java.util.regex.PatternSyntaxException;
  * @see     java.nio.charset.Charset
  * @since   JDK1.0
  */
-
+// String类被final修饰，无法被继承，方法无法被重写
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
     /** The value is used for character storage. */
+    // final修饰一旦赋值，无法修改
+    // private权限，无法通过其他方式访问
     private final char value[];
 
     /** Cache the hash code for the string */
@@ -198,6 +200,7 @@ public final class String
         if (offset > value.length - count) {
             throw new StringIndexOutOfBoundsException(offset + count);
         }
+        // 参数：字符数组, 开始位置, 结束位置
         this.value = Arrays.copyOfRange(value, offset, offset+count);
     }
 
@@ -1922,6 +1925,7 @@ public final class String
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(subLen);
         }
+        // 调用Arrays.copyOfRange这个方法，实际就是new一个新的String进行数组的拷贝
         return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
     }
 

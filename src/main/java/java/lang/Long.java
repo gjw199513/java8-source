@@ -803,6 +803,7 @@ public final class Long extends Number implements Comparable<Long> {
         return Long.valueOf(parseLong(s, 10));
     }
 
+    // 使用静态代码块和数组实现
     private static class LongCache {
         private LongCache(){}
         // 缓存，范围从 -128 到 127,+1 是因为有个 0
@@ -834,6 +835,7 @@ public final class Long extends Number implements Comparable<Long> {
      * @return a {@code Long} instance representing {@code l}.
      * @since  1.5
      */
+    // valueOf方法使用了缓存
     public static Long valueOf(long l) {
         final int offset = 128;
         if (l >= -128 && l <= 127) { // will cache
