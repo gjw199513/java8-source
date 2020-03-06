@@ -611,6 +611,7 @@ public class ArrayList<E> extends AbstractList<E>
         int numNew = a.length;
         // 确保容量充足，整个过程只会扩容一次
         ensureCapacityInternal(size + numNew);  // Increments modCount
+        // 进行数组的拷贝
         System.arraycopy(a, 0, elementData, size, numNew);
         size += numNew;
         return numNew != 0;
@@ -722,6 +723,7 @@ public class ArrayList<E> extends AbstractList<E>
      *                              or if the specified collection is null
      * @see Collection#contains(Object)
      */
+    // 批量删除，removeAll 方法底层调用的是 batchRemove 方法
     public boolean removeAll(Collection<?> c) {
         Objects.requireNonNull(c);
         return batchRemove(c, false);
@@ -749,9 +751,12 @@ public class ArrayList<E> extends AbstractList<E>
     }
 
     // 批量删除，removeAll 方法 complement 参数传递的是 false
+    // complement 参数默认是 false,false 的意思是数组中不包含 c 中数据的节点往头移动
+    // true 意思是数组中包含 c 中数据的节点往头移动，这个是根据你要删除数据和原数组大小的比例来决定的
+    // 如果你要删除的数据很多，选择 false 性能更好，当然 removeAll 方法默认就是 false。
     private boolean batchRemove(Collection<?> c, boolean complement) {
         final Object[] elementData = this.elementData;
-        // r 表示当前循环的位置、w 表示之前的数据，都不是要删除的数据，w 之后都是需要删除的数据
+        // r 表示当前循环的位置、w 表示之前的数据，都是不需要删除的数据，w 之后都是需要删除的数据
         int r = 0, w = 0;
         boolean modified = false;
         try {
@@ -763,7 +768,7 @@ public class ArrayList<E> extends AbstractList<E>
             }
         } finally {
             // r 和 size 不等，说明在 try 过程中发生了异常，在 r 处断开
-            // 把 r 之后的数组移动到 w 之后
+            // 把 r 位置之后的数组移动到 w 位置之后(r 位置之后的数组数据都是没有判断过的数据，这样不会影响没有判断的数据，判断过的数据可以被删除)
             if (r != size) {
                 System.arraycopy(elementData, r,
                         elementData, w,
@@ -771,6 +776,7 @@ public class ArrayList<E> extends AbstractList<E>
                 w += size - r;
             }
             // w != size 说明数组中是有数据需要被删除了
+            // 如果 w、size 相等，说明没有数据需要被删除
             if (w != size) {
                 // w 之后都是需要删除的数据，赋值为空，帮助 gc。
                 for (int i = w; i < size; i++) {
