@@ -1326,6 +1326,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     @Override
     public void forEach(Consumer<? super E> action) {
+        // 判断非空
         Objects.requireNonNull(action);
         // modCount的原始值被拷贝
         final int expectedModCount = modCount;
@@ -1333,10 +1334,10 @@ public class ArrayList<E> extends AbstractList<E>
         final int size = this.size;
         // 每次循环都会判断数组有没有被修改，一旦被修改，停止循环
         for (int i = 0; modCount == expectedModCount && i < size; i++) {
-            // 执行循环内容
+            // 执行循环内容，action 代表我们要干的事情
             action.accept(elementData[i]);
         }
-        //抛异常
+        // 数组如果被修改了，抛异常
         if (modCount != expectedModCount) {
             throw new ConcurrentModificationException();
         }

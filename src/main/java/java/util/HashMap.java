@@ -1879,6 +1879,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
     }
 
     @Override
+    // 如果 map 中存在 key 了，那么 value 就不会覆盖，如果不存在 key ，新增成功
     public V putIfAbsent(K key, V value) {
         return putVal(hash(key), key, value, true, true);
     }
@@ -1973,6 +1974,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
         return v;
     }
 
+    // 为防止 key 值不存在造成未知错误，map 还提供了 computeIfPresent 方法，表示只有在 key 存在的时候，才执行计算
     public V computeIfPresent(K key,
                               BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         if (remappingFunction == null) {
@@ -1996,6 +1998,7 @@ public class HashMap<K, V> extends AbstractMap<K, V>
     }
 
     @Override
+    // 允许我们把 key 和 value 的值进行计算后，再 put 到 map 中
     public V compute(K key,
                      BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         if (remappingFunction == null) {
