@@ -49,14 +49,14 @@ import java.io.InvalidObjectException;
  * the threads modifies the set, it <i>must</i> be synchronized externally.
  * This is typically accomplished by synchronizing on some object that
  * naturally encapsulates the set.
- *
+ * <p>
  * If no such object exists, the set should be "wrapped" using the
  * {@link Collections#synchronizedSet Collections.synchronizedSet}
  * method.  This is best done at creation time, to prevent accidental
  * unsynchronized access to the set:<pre>
  *   Set s = Collections.synchronizedSet(new HashSet(...));</pre>
- *
- *   使用线程安全的类：Collections.synchronizedSet
+ * <p>
+ * 使用线程安全的类：Collections.synchronizedSet
  *
  * <p>The iterators returned by this class's <tt>iterator</tt> method are
  * <i>fail-fast</i>: if the set is modified at any time after the iterator is
@@ -65,7 +65,7 @@ import java.io.InvalidObjectException;
  * Thus, in the face of concurrent modification, the iterator fails quickly
  * and cleanly, rather than risking arbitrary, non-deterministic behavior at
  * an undetermined time in the future.
- *
+ * <p>
  * 迭代过程中，数据结构被改动，是要快速失败的。
  *
  * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
@@ -81,25 +81,24 @@ import java.io.InvalidObjectException;
  * Java Collections Framework</a>.
  *
  * @param <E> the type of elements maintained by this set
- *
- * @author  Josh Bloch
- * @author  Neal Gafter
- * @see     Collection
- * @see     Set
- * @see     TreeSet
- * @see     HashMap
- * @since   1.2
+ * @author Josh Bloch
+ * @author Neal Gafter
+ * @see Collection
+ * @see Set
+ * @see TreeSet
+ * @see HashMap
+ * @since 1.2
  */
 
 public class HashSet<E>
-    extends AbstractSet<E>
-    implements Set<E>, Cloneable, java.io.Serializable
-{
+        extends AbstractSet<E>
+        implements Set<E>, Cloneable, java.io.Serializable {
     static final long serialVersionUID = -5024744406713321676L;
-
-    private transient HashMap<E,Object> map;
+    // 把 HashMap 组合进来，key 是 Hashset 的 key，value 是下面的 PRESENT
+    private transient HashMap<E, Object> map;
 
     // Dummy value to associate with an Object in the backing Map
+    // HashMap 中的 value
     private static final Object PRESENT = new Object();
 
     /**
@@ -119,9 +118,9 @@ public class HashSet<E>
      * @param c the collection whose elements are to be placed into this set
      * @throws NullPointerException if the specified collection is null
      */
-    // 对 HashMap 的容量进行了计算，在 16 和 给定值大小之间选择最大的值
     public HashSet(Collection<? extends E> c) {
-        map = new HashMap<>(Math.max((int) (c.size()/.75f) + 1, 16));
+        // 对 HashMap 的容量进行了计算，在 16 和 给定值大小之间选择最大的值
+        map = new HashMap<>(Math.max((int) (c.size() / .75f) + 1, 16));
         addAll(c);
     }
 
@@ -129,10 +128,10 @@ public class HashSet<E>
      * Constructs a new, empty set; the backing <tt>HashMap</tt> instance has
      * the specified initial capacity and the specified load factor.
      *
-     * @param      initialCapacity   the initial capacity of the hash map
-     * @param      loadFactor        the load factor of the hash map
-     * @throws     IllegalArgumentException if the initial capacity is less
-     *             than zero, or if the load factor is nonpositive
+     * @param initialCapacity the initial capacity of the hash map
+     * @param loadFactor      the load factor of the hash map
+     * @throws IllegalArgumentException if the initial capacity is less
+     *                                  than zero, or if the load factor is nonpositive
      */
     public HashSet(int initialCapacity, float loadFactor) {
         map = new HashMap<>(initialCapacity, loadFactor);
@@ -142,9 +141,9 @@ public class HashSet<E>
      * Constructs a new, empty set; the backing <tt>HashMap</tt> instance has
      * the specified initial capacity and default load factor (0.75).
      *
-     * @param      initialCapacity   the initial capacity of the hash table
-     * @throws     IllegalArgumentException if the initial capacity is less
-     *             than zero
+     * @param initialCapacity the initial capacity of the hash table
+     * @throws IllegalArgumentException if the initial capacity is less
+     *                                  than zero
      */
     public HashSet(int initialCapacity) {
         map = new HashMap<>(initialCapacity);
@@ -156,12 +155,12 @@ public class HashSet<E>
      * HashMap instance is a LinkedHashMap with the specified initial
      * capacity and the specified load factor.
      *
-     * @param      initialCapacity   the initial capacity of the hash map
-     * @param      loadFactor        the load factor of the hash map
-     * @param      dummy             ignored (distinguishes this
-     *             constructor from other int, float constructor.)
-     * @throws     IllegalArgumentException if the initial capacity is less
-     *             than zero, or if the load factor is nonpositive
+     * @param initialCapacity the initial capacity of the hash map
+     * @param loadFactor      the load factor of the hash map
+     * @param dummy           ignored (distinguishes this
+     *                        constructor from other int, float constructor.)
+     * @throws IllegalArgumentException if the initial capacity is less
+     *                                  than zero, or if the load factor is nonpositive
      */
     HashSet(int initialCapacity, float loadFactor, boolean dummy) {
         map = new LinkedHashMap<>(initialCapacity, loadFactor);
@@ -222,7 +221,8 @@ public class HashSet<E>
      * element
      */
     public boolean add(E e) {
-        return map.put(e, PRESENT)==null;
+        // 直接使用 HashMap 的 put 方法，进行一些简单的逻辑判断
+        return map.put(e, PRESENT) == null;
     }
 
     /**
@@ -238,7 +238,7 @@ public class HashSet<E>
      * @return <tt>true</tt> if the set contained the specified element
      */
     public boolean remove(Object o) {
-        return map.remove(o)==PRESENT;
+        return map.remove(o) == PRESENT;
     }
 
     /**
@@ -271,13 +271,13 @@ public class HashSet<E>
      * serialize it).
      *
      * @serialData The capacity of the backing <tt>HashMap</tt> instance
-     *             (int), and its load factor (float) are emitted, followed by
-     *             the size of the set (the number of elements it contains)
-     *             (int), followed by all of its elements (each an Object) in
-     *             no particular order.
+     * (int), and its load factor (float) are emitted, followed by
+     * the size of the set (the number of elements it contains)
+     * (int), followed by all of its elements (each an Object) in
+     * no particular order.
      */
     private void writeObject(java.io.ObjectOutputStream s)
-        throws java.io.IOException {
+            throws java.io.IOException {
         // Write out any hidden serialization magic
         s.defaultWriteObject();
 
@@ -289,8 +289,9 @@ public class HashSet<E>
         s.writeInt(map.size());
 
         // Write out all elements in the proper order.
-        for (E e : map.keySet())
+        for (E e : map.keySet()) {
             s.writeObject(e);
+        }
     }
 
     /**
@@ -298,7 +299,7 @@ public class HashSet<E>
      * deserialize it).
      */
     private void readObject(java.io.ObjectInputStream s)
-        throws java.io.IOException, ClassNotFoundException {
+            throws java.io.IOException, ClassNotFoundException {
         // Read in any hidden serialization magic
         s.defaultReadObject();
 
@@ -306,21 +307,21 @@ public class HashSet<E>
         int capacity = s.readInt();
         if (capacity < 0) {
             throw new InvalidObjectException("Illegal capacity: " +
-                                             capacity);
+                    capacity);
         }
 
         // Read load factor and verify positive and non NaN.
         float loadFactor = s.readFloat();
         if (loadFactor <= 0 || Float.isNaN(loadFactor)) {
             throw new InvalidObjectException("Illegal load factor: " +
-                                             loadFactor);
+                    loadFactor);
         }
 
         // Read size and verify non-negative.
         int size = s.readInt();
         if (size < 0) {
             throw new InvalidObjectException("Illegal size: " +
-                                             size);
+                    size);
         }
 
         // Set the capacity according to the size and load factor ensuring that
@@ -329,14 +330,14 @@ public class HashSet<E>
                 HashMap.MAXIMUM_CAPACITY);
 
         // Create backing HashMap
-        map = (((HashSet<?>)this) instanceof LinkedHashSet ?
-               new LinkedHashMap<E,Object>(capacity, loadFactor) :
-               new HashMap<E,Object>(capacity, loadFactor));
+        map = (((HashSet<?>) this) instanceof LinkedHashSet ?
+                new LinkedHashMap<E, Object>(capacity, loadFactor) :
+                new HashMap<E, Object>(capacity, loadFactor));
 
         // Read in all elements in the proper order.
-        for (int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             @SuppressWarnings("unchecked")
-                E e = (E) s.readObject();
+            E e = (E) s.readObject();
             map.put(e, PRESENT);
         }
     }
@@ -354,6 +355,6 @@ public class HashSet<E>
      * @since 1.8
      */
     public Spliterator<E> spliterator() {
-        return new HashMap.KeySpliterator<E,Object>(map, 0, -1, 0, 0);
+        return new HashMap.KeySpliterator<E, Object>(map, 0, -1, 0, 0);
     }
 }
